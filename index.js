@@ -43,6 +43,19 @@ app.post("/api/shorturl", function(req, res){
     }
 });
 
+app.get("/api/shorturl/:inputShortUrl", function(req, res){
+  let inputUrl = req.params.inputShortUrl;
+  if(inputUrl in shortToOgMap){
+    console.log(inputUrl);
+    console.log(shortToOgMap[inputUrl]);
+    res.redirect(shortToOgMap[inputUrl]);
+  }else{
+    res.json({
+      "error": "Short URL Not Found"
+    });
+  }
+});
+
 // Your first API endpoint
 app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
