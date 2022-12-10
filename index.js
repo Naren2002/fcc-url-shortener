@@ -30,22 +30,38 @@ let shortToOgMap = {
 
 }
 
+const isValidUrl = urlString=> {
+  var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+  '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+  '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+  '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
+  
+  return !!urlPattern.test(urlString);
+}
+
 app.post("/api/shorturl", function(req, res){
     let inputUrl = req.body.url;
     console.log(inputUrl);
 
     // If the input URL is not present in the keys of "ogToShortMap" Object 
     // It will increment the mappingKey and add the mappings to both the Objects
-
-    if (!(inputUrl in ogToShortMap)){
-      mappingKey += 1;
-      ogToShortMap[inputUrl] = mappingKey;
-      shortToOgMap[mappingKey] = inputUrl;
-
+    if (isValidUrl(inputUrl)){
+      if (!(inputUrl in ogToShortMap)){
+        mappingKey += 1;
+        ogToShortMap[inputUrl] = mappingKey;
+        shortToOgMap[mappingKey] = inputUrl;
+  
+        res.json({
+          original_url: inputUrl,
+          short_url: mappingKey
+        })
+      }
+    }else{
       res.json({
-        original_url: inputUrl,
-        short_url: mappingKey
-      })
+        error: "invalid url"
+      });
     }
 });
 
@@ -54,7 +70,7 @@ app.get("/api/shorturl/:inputShortUrl", function(req, res){
 
   // Checked if the input URL is present in the mapping Object and
   // Redirects the user to the long form URL if it is present
-  
+
   if(inputUrl in shortToOgMap){
     console.log(inputUrl);
     console.log(shortToOgMap[inputUrl]);
