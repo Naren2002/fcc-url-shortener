@@ -20,10 +20,12 @@ app.get('/', function(req, res) {
 
 let mappingKey = 0;
 
+// The Object that contains the mapping from the original URL to the short URL 
 let ogToShortMap = {
 
 }
 
+// The Object that contains the mapping from the short URL to the original URL
 let shortToOgMap = {
 
 }
@@ -31,6 +33,10 @@ let shortToOgMap = {
 app.post("/api/shorturl", function(req, res){
     let inputUrl = req.body.url;
     console.log(inputUrl);
+
+    // If the input URL is not present in the keys of "ogToShortMap" Object 
+    // It will increment the mappingKey and add the mappings to both the Objects
+
     if (!(inputUrl in ogToShortMap)){
       mappingKey += 1;
       ogToShortMap[inputUrl] = mappingKey;
@@ -45,6 +51,10 @@ app.post("/api/shorturl", function(req, res){
 
 app.get("/api/shorturl/:inputShortUrl", function(req, res){
   let inputUrl = req.params.inputShortUrl;
+
+  // Checked if the input URL is present in the mapping Object and
+  // Redirects the user to the long form URL if it is present
+  
   if(inputUrl in shortToOgMap){
     console.log(inputUrl);
     console.log(shortToOgMap[inputUrl]);
